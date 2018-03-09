@@ -1,0 +1,4 @@
+valores entre 40 y 80
+std puede ser menor a 20
+
+luego de discriminar regiones con estos valores, desechar todos los valores dee 90 en adelante, pues pertenecen a brillo

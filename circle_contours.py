@@ -6,13 +6,15 @@ import bresenham
 
 
 """Open image in grayscale, apply bilateral filter and detect contours"""
-img = cv2.imread('../0000000002.tiff',0)
+#img = cv2.imread('0000000002.tiff',0)
+img = cv2.imread('objects/object4.tiff',0)
+
 #img = cv2.imread('../camaron_caja_negra.tif',0)
 rows,cols=img.shape
 
 #Threshold image
 bilateral_filtered_image = cv2.bilateralFilter(img, 7, 35, 150)
-ret,binary = cv2.threshold(bilateral_filtered_image,24,255,cv2.THRESH_BINARY)
+ret,binary = cv2.threshold(bilateral_filtered_image,38,255,cv2.THRESH_BINARY)
 mask=np.zeros(img.shape)
 
 
@@ -40,7 +42,7 @@ for contour in contours:
     	radius = int(radius)
         #if circles are inside the image
     	if(center[0]<=rows and center[1]<=cols):
-    		#cv2.circle(img,center,radius,(255,255,255),2) #last parameter is thickness
+            cv2.circle(img,center,radius,(255,255,255),2) #last parameter is thickness
             count=0
             #get segments of the ring delimitates by the external and internal circle that encloses the shrimps
             lineas=bresenham.circle_segmentation(img, center[0], center[1], radius)
@@ -56,18 +58,23 @@ for contour in contours:
                     #get standard deviation
                     std=np.std(intensidades)
                     mean=np.mean(intensidades)
-                    if(std>35 or std<22):
+                    #if(std>35 or std<22):
                     #if(mean>100 or mean<70):
-                        del lineas[count]
-                    print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
+                        #del lineas[count]
+                    #else:
                     desviaciones.append(std)
+                    promedios.append(mean)
                     count+=1
-                for linea in lineas:
+                    print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
+                #for linea in lineas:
                     img[linea[:,0],linea[:,1]]=0
+
                 desviaciones=np.asarray(desviaciones)
-                ejex=np.arange(1,count+1)
-    		  	plt.scatter(ejex, desviaciones)
-    		  	plt.show()
+                promedios=np.asarray(promedios)
+                #ejex=np.arange(1,count+1)
+                plt.scatter(promedios, desviaciones)
+                plt.title('Desviaciones vs promedio de intensidades de segmentos')
+                plt.show()
             #cv2.circle(mask,center,radius/2,(0,255,255),-1)
     		
 

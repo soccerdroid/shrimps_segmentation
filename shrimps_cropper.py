@@ -5,15 +5,15 @@ import numpy as np
 import cv2
 from scipy import ndimage
 from skimage.color import rgb2gray
-from skimage import io, filters
+from skimage import io, filter
 from shutil import copyfile
 from os.path import join
 import matplotlib.pyplot as plt
 
 
 def binarize_otsu(img):
-	threshold = filters.threshold_otsu(img)
-	print("asdfadsf " + str(threshold))
+	threshold = filter.threshold_otsu(img)
+	#print("asdfadsf " + str(threshold))
 	img_copy = img.copy()
 	img_copy[img_copy<threshold] = 0;
 	img_copy[img_copy>threshold] = 1;
@@ -71,24 +71,26 @@ output_dir= args[1].strip()
 img = io.imread(input_img)
 img_gray = rgb2gray(img)
 img=binarize_otsu(img_gray)
-io.imshow(img)
-plt.show()
+
 #Label pixels with values different from 0
 label_img, num_labels = ndimage.label(input=img)
+print (label_img)
+io.imshow(img)
+plt.show()
 
 # Find bounding boxes of the objects in the image
-objects = ndimage.find_objects(label_img);
+# objects = ndimage.find_objects(label_img);
 
-# se transforman los objectos
-# a una estructura mas facil
-objects = transformObjects(objects)
-# se los ordena de acuerdo al area
-objects = sorted(objects,compareObjects)
-# los 7 objetos mas grandes son
-# los bounding boxes de las pepas
-for o in objects:
-	print(o[1] - o[0])*(o[3] - o[2])
-boundingBoxes = objects[0:7]
+# # se transforman los objectos
+# # a una estructura mas facil
+# objects = transformObjects(objects)
+# # se los ordena de acuerdo al area
+# objects = sorted(objects,compareObjects)
+# # los 7 objetos mas grandes son
+# # los bounding boxes de las pepas
+# #for o in objects:
+# 	#print(o[1] - o[0])*(o[3] - o[2])
+# boundingBoxes = objects[0:7]
 
-#save an image per each shrimp
-saveObjects(boundingBoxes,input_img,output_dir)
+# #save an image per each shrimp
+# saveObjects(boundingBoxes,input_img,output_dir)
