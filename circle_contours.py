@@ -37,8 +37,10 @@ for contour in contours:
     #approximate contours to a polygon 
     approx = cv2.approxPolyDP(contour,0.01*cv2.arcLength(contour,True),True)
     area = cv2.contourArea(contour)
+    
     #just look for big objects
     if ((len(approx) > 10) & (area > 100) ):
+        print(area)
         contour_list.append(contour)
         #Draw minimun enclosing circle
         (x,y),radius = cv2.minEnclosingCircle(contour)
@@ -66,7 +68,7 @@ for contour in contours:
                     deviations.append(std)
                     means.append(mean)
                     count += 1
-                    print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
+                    #print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
                 #for linea in lineas:
                     img[linea[:,0],linea[:,1]]=0
 
@@ -81,7 +83,7 @@ for contour in contours:
 
 
 
-#cv2.drawContours(color_img, contour_list,  -1, (0,255,0), 2)
+cv2.drawContours(img, contour_list,  -1, (0,255,0), 2)
 cv2.imshow('Objects Detected',img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
