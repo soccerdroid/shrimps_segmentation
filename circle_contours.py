@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import circle_utils
 import sys
-import bresenham
-
 
 """Open image in grayscale, apply bilateral filter and detect contours"""
-#img = cv2.imread('0000000002.tiff',0)
-img = cv2.imread('objects/new_object4.tiff',0)
 
-#img = cv2.imread('../camaron_caja_negra.tif',0)
+f = open("lineas.txt","w")
+
+#img = cv2.imread("camaron_caja_negra.tif",0)
+img = cv2.imread("objects/new_object2.tiff",0)
 rows,cols=img.shape
 
 #Threshold image
@@ -20,12 +20,16 @@ ret,binary = cv2.threshold(bilateral_filtered_image,thresh,255,cv2.THRESH_BINARY
 kernel = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
 binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
 cv2.imshow("agadf",binary)
-mask = np.zeros(img.shape)
+cv2.waitKey(0)
 
+mask = np.zeros(img.shape)
+indices = np.where(binary==255)
+binary[indices] = 1
+binary = np.multiply(img,binary)
 
 #Detected contours with cany, same output with just the binary image
 #edge_detected_image = cv2.Canny(binary, 75, 200)
-#cv2.imshow('Edge', edge_detected_image)
+cv2.imshow('binary', binary)
 cv2.waitKey(0)
 
 #Find contours of shrimps 
@@ -34,6 +38,7 @@ contour_list = []
 color_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 for contour in contours:
+    f.write("contour\n")
     #approximate contours to a polygon 
     approx = cv2.approxPolyDP(contour,0.01*cv2.arcLength(contour,True),True)
     area = cv2.contourArea(contour)
@@ -49,7 +54,7 @@ for contour in contours:
             cv2.circle(img,center,radius,(255,255,255),2) #last parameter is thickness
             count=0
             #get segments of the ring delimitates by the external and internal circle that encloses the shrimps
-            lineas=bresenham.circle_segmentation(img, center[0], center[1], radius)
+            lineas=circle_utils.circle_segmentation(img, center[0], center[1], radius)
             if(lineas!=-1):
             	deviations=[]
             	means=[]
@@ -62,11 +67,13 @@ for contour in contours:
                     #if(std>35 or std<22):
                     #if(mean>100 or mean<70):
                         #del lineas[count]
-                    #else:
+
                     deviations.append(std)
                     means.append(mean)
                     count += 1
                     print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
+                    f.write(str(linea[0,0])+" , "+str(linea[0,1])+" , "+str(linea[-1,0])+" , "+str(linea[-1,-1])+"\n")
+
                 #for linea in lineas:
                     img[linea[:,0],linea[:,1]]=0
 
@@ -77,7 +84,7 @@ for contour in contours:
                 plt.title('deviations vs promedio de intensidades de segmentos')
                 plt.show()
             #cv2.circle(mask,center,radius/2,(0,255,255),-1)
-    		
+f.close()		
 
 
 

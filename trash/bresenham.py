@@ -1,4 +1,5 @@
 import numpy as np
+from bresenham import bresenham
 #from skimage.draw import line, circle_perimeter
 #from skimage.io import imread, imshow
 #import tifffile as tiff
@@ -11,7 +12,7 @@ def circle_segmentation(img,h,k,radius):
   center to each perimeter point"""
   #rr and cc are the x and y coordinates respectively of points in the circle perimeter
   rows,cols=img.shape
-  if(h+radius>=cols or k+radius>=rows):
+  if(h+radius>=cols or k+radius>=rows or h-radius<0 or k-radius<0):
     return -1
   xx_ext, yy_ext = circle(k,h,radius)#numpy array of coords x , and other array of coords y
   xx_int, yy_int = circle(k,h,radius/2) 

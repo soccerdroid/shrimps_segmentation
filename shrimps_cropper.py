@@ -2,7 +2,6 @@ import sys
 #sys.path.append('/home/belen/recientex/cvr/pruebaCacao/lib')
 import os
 import numpy as np
-import cv2
 from scipy import ndimage
 from skimage.color import rgb2gray
 from skimage import io, filter
