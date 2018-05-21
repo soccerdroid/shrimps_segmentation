@@ -4,7 +4,7 @@ import os
 import numpy as np
 from scipy import ndimage
 from skimage.color import rgb2gray
-from skimage import io, filter
+from skimage import io, filters
 from shutil import copyfile
 from os.path import join
 import matplotlib.pyplot as plt

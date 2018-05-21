@@ -6,20 +6,26 @@ import sys
 
 """Open image in grayscale, apply bilateral filter and detect contours"""
 
-f = open("lineas.txt","w")
-
+#f = open("lineas.txt","w")
+#Get console parameters
+args = sys.argv[1:]
+input_img = args[0]
 #img = cv2.imread("camaron_caja_negra.tif",0)
-img = cv2.imread("objects/new_object2.tiff",0)
+#img = cv2.imread("objects/new_object2.tiff",0)
+img = cv2.imread(input_img,0)
 rows,cols=img.shape
 
 #Threshold image
 bilateral_filtered_image = cv2.bilateralFilter(img, 7, 35, 150)
-thresh =int(np.std(bilateral_filtered_image))
+thresh =int(np.mean(bilateral_filtered_image))
 ret,binary = cv2.threshold(bilateral_filtered_image,thresh,255,cv2.THRESH_BINARY)
+#ret,binary = cv2.threshold(bilateral_filtered_image,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
-kernel = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
-binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
-cv2.imshow("agadf",binary)
+#kernel = np.ones((10,10), np.uint8)
+#kernel[1:8,1:8] = 0
+kernel = cv2.getStructuringElement(cv2.MORPH_CROSS,(17,17))
+close = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+cv2.imshow("agadf",close)
 cv2.waitKey(0)
 
 mask = np.zeros(img.shape)
@@ -29,8 +35,7 @@ binary = np.multiply(img,binary)
 
 #Detected contours with cany, same output with just the binary image
 #edge_detected_image = cv2.Canny(binary, 75, 200)
-cv2.imshow('binary', binary)
-cv2.waitKey(0)
+
 
 #Find contours of shrimps 
 contours= cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
@@ -38,7 +43,7 @@ contour_list = []
 color_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 for contour in contours:
-    f.write("contour\n")
+    #f.write("contour\n")
     #approximate contours to a polygon 
     approx = cv2.approxPolyDP(contour,0.01*cv2.arcLength(contour,True),True)
     area = cv2.contourArea(contour)
@@ -71,8 +76,8 @@ for contour in contours:
                     deviations.append(std)
                     means.append(mean)
                     count += 1
-                    print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
-                    f.write(str(linea[0,0])+" , "+str(linea[0,1])+" , "+str(linea[-1,0])+" , "+str(linea[-1,-1])+"\n")
+                    #print(str(linea[0,0])+" , "+str(linea[-1,-1])+" -> "+str(std))
+                    #f.write(str(linea[0,0])+" , "+str(linea[0,1])+" , "+str(linea[-1,0])+" , "+str(linea[-1,-1])+"\n")
 
                 #for linea in lineas:
                     img[linea[:,0],linea[:,1]]=0
@@ -84,7 +89,7 @@ for contour in contours:
                 plt.title('deviations vs promedio de intensidades de segmentos')
                 plt.show()
             #cv2.circle(mask,center,radius/2,(0,255,255),-1)
-f.close()		
+#f.close()		
 
 
 
